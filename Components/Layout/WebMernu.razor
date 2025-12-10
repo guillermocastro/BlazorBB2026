@@ -16,31 +16,31 @@
                 @* <a href="#" class="nav-link dropdown-toggle">@L["Who we are"]</a> *@
                 <div class="dropdown-menu m-0">
                     <a href="/About" class="dropdown-item">@L["About"]</a>
-                    <a href="/Mision" class="dropdown-item">@L["Misión"]</a>
                     <a href="/Vision" class="dropdown-item">@L["Visión"]</a>
-                    <a href="/Phylosophie" class="dropdown-item">@L["Filosofía"]</a>
                     <a href="/Privacy" class="dropdown-item">@L["Privacidad"]</a>
+                    <a href="/Legal" class="dropdown-item">@L["Legal"]</a>
+                    <a href="/Testimonial" class="dropdown-item">@L["Testimonial"]</a>
                 </div>
             </div>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Portfolio</a>
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@L["Portfolio"]</a>
                 <div class="dropdown-menu m-0">
-                    <a href="/Dba" class="dropdown-item">DBA</a>
+                    <a href="/Dba" class="dropdown-item">@L["DBA"]</a>
                     <a href="/BlueBriks" class="dropdown-item">BlueBriks</a>
-                    <a href="/Pm" class="dropdown-item">PM</a>
-                    <a href="/Integration" class="dropdown-item">Integration</a>
-                    <a href="/Websites" class="dropdown-item">Websites</a>
+                    <a href="/Pm" class="dropdown-item">@L["Project Management"]</a>
+                    <a href="/Integration" class="dropdown-item">@L["Integration"]</a>
+                    <a href="/Websites" class="dropdown-item">@L["Websites"]</a>
                     @* <a href="404.html" class="dropdown-item">404 Page</a> *@
                 </div>
             </div>
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                 <div class="dropdown-menu m-0">
-                    <a href="feature.html" class="dropdown-item">Features</a>
-                    <a href="pricing.html" class="dropdown-item">Pricing</a>
-                    <a href="blog.html" class="dropdown-item">Blog</a>
-                    <a href="/Testimonial" class="dropdown-item">Testimonial</a>
-                    <a href="404.html" class="dropdown-item">404 Page</a>
+                    <a href="/feature" class="dropdown-item">Features</a>
+                    <a href="/pricing" class="dropdown-item">Pricing</a>
+                    <a href="/blog.html" class="dropdown-item">Blog</a>
+                    
+                    <a href="/404" class="dropdown-item">404 Page</a>
                 </div>
             </div>
             <a href="/Contact" class="nav-item nav-link">Contact Us</a>
@@ -53,14 +53,14 @@
                     <AntiforgeryToken />
                     <input type="hidden" name="ReturnUrl" value="@currentUrl" />
                     <button type="submit" class="nav-link">
-                        <span class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4" aria-hidden="true"> Logout</span>
+                        <span class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4" aria-hidden="true">@L["Logout"]</span>
                     </button>
                 </form>
                 @* <a href="Account/Login" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4">Log In</a> *@
             </Authorized>
             <NotAuthorized>
-                <a href="Account/Login" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4">Log In</a>
-                <a href="Account/Register" class="btn btn-primary rounded-pill text-white py-2 px-4">Sign Up</a>
+                <a href="Account/Login" class="btn btn-light border border-primary rounded-pill text-primary py-2 px-4 me-4">@L["Log In"]</a>
+                <a href="Account/Register" class="btn btn-primary rounded-pill text-white py-2 px-4">@L["Sign Up"]</a>
             </NotAuthorized>
         </AuthorizeView>
         

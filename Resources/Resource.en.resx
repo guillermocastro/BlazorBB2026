@@ -1224,6 +1224,9 @@ In delivering the Services, the Contractor agrees to comply with all Change Cont
     <value>Remaining Hours</value>
   </data>
   <data name="Who we are" xml:space="preserve">
-    <value>Who we are</value>
+    <value>Who we are?</value>
+  </data>
+  <data name="Websites" xml:space="preserve">
+    <value>Websites</value>
   </data>
 </root>

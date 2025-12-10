@@ -1224,4 +1224,10 @@ Al prestar los Servicios, el Contratista se compromete a cumplir con todos los p
   <data name="RemainingHours" xml:space="preserve">
     <value>Horas restantes</value>
   </data>
+  <data name="Who we are" xml:space="preserve">
+    <value>¿Quienes somos?</value>
+  </data>
+  <data name="Websites" xml:space="preserve">
+    <value>Sitios web</value>
+  </data>
 </root>
