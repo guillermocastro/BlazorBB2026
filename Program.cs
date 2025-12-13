@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,6 +17,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddLocalization();
+builder.Services.AddControllers();
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -38,7 +41,10 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
+
 var app = builder.Build();
+//Secrets
+
 // Localization
 var supportedCultures = new[] { "en-US", "es-ES" };
 var localizationOptions = new RequestLocalizationOptions()
@@ -50,7 +56,6 @@ var localizationOptions = new RequestLocalizationOptions()
 app.UseRequestLocalization(new RequestLocalizationOptions()
     .AddSupportedCultures(new[] { "en-US", "es-ES" })
     .AddSupportedUICultures(new[] { "en-US", "es-ES" }));
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -73,5 +78,6 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+app.MapControllers();
 
 app.Run();

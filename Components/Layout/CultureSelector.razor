@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+﻿﻿@using System.Globalization
 @inject NavigationManager Nav
 <label>
     @*Select your locale:*@
@@ -35,7 +35,7 @@
                 var uriEscaped = Uri.EscapeDataString(uri);
 
                 Nav.NavigateTo(
-                    $"Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
+                    $"/Culture/Set?culture={cultureEscaped}&redirectUri={uriEscaped}",
                     forceLoad: true);
             }
         }

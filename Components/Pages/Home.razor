@@ -1,8 +1,8 @@
-﻿@layout WebsiteLayout
+﻿
+@inject IStringLocalizer<Resources.Resource> L
 @page "/"
-
-<PageTitle>Home</PageTitle>
+<PageTitle>@L["Home"]</PageTitle>
 <CultureSelector />
-<h1>Hello, world!</h1>
+<h6>@L["About_txt"]</h6>
+<p>@L["Contact Info"]</p>
 
-Welcome to your new app.
