@@ -1,6 +1,7 @@
 using BlazorBB2026.Components;
 using BlazorBB2026.Components.Account;
 using BlazorBB2026.Data;
+using BlazorBB2026.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
+builder.Services.AddScoped<ICommonService, CommonService>();
 
 var app = builder.Build();
 //Secrets
