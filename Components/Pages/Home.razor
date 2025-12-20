@@ -1,8 +1,17 @@
 ﻿
 @inject IStringLocalizer<Resources.Resource> L
+@inject ICommonService CommonService
 @page "/"
 <PageTitle>@L["Home"]</PageTitle>
 <CultureSelector />
 <h6>@L["About_txt"]</h6>
 <Currencies />
-
+<p>@cs</p>
+<p></p>
+@code{
+    private string cs { get; set; } = "maui";
+    protected override async Task OnInitializedAsync()
+    {
+        cs = "krypto";// await CommonService.GetCS();
+    }
+}

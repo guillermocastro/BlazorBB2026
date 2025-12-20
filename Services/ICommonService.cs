@@ -9,6 +9,11 @@ namespace BlazorBB2026.Services
         Task<string> DeleteCurrency(Currency currency);
         Task<string> PostCurrency(Currency currency);
         Task<List<Country>> GetCountries();
-
+        Task<List<InvoiceClass>> GetInvoiceClasses();
+        Task<List<InvoiceIssuer>> GetInvoiceIssuers();
+        Task<List<InvoiceType>> GetInvoiceTypes();
+        Task<List<OperationKey>> GetOperationKeys();
+        Task<List<OperationType>> GetOperationTypes();
+        //Task<string> GetCS();
     }
 }

@@ -15,13 +15,12 @@ namespace BlazorBB2026.Services
         }
         public async Task<List<Currency>> GetCurrencies()
         {
-            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
                 DynamicParameters parameters = new DynamicParameters();
                 //parameters.Add("Page", Page);
-                //parameters.Add("Rows", Rows);
                 var sqlquery = "SELECT * FROM vk.Currency";
-                IEnumerable<Currency> currencylist = await con.QueryAsync<Currency>(sqlquery, parameters, commandType: CommandType.Text);
+                IEnumerable<Currency> currencylist = await conn.QueryAsync<Currency>(sqlquery, parameters, commandType: CommandType.Text);
                 return currencylist.ToList();
             }
         }
@@ -101,11 +100,64 @@ namespace BlazorBB2026.Services
             {
                 DynamicParameters parameters = new DynamicParameters();
                 //parameters.Add("Page", Page);
-                //parameters.Add("Rows", Rows);
                 var sqlquery = "SELECT * FROM vk.Country";
                 IEnumerable<Country> countrylist = await con.QueryAsync<Country>(sqlquery, parameters, commandType: CommandType.Text);
                 return countrylist.ToList();
             }
         }
+        public async Task<List<InvoiceClass>> GetInvoiceClasses() {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                //parameters.Add("Page", Page);
+                var sqlquery = "SELECT * FROM vk.InvoiceClass";
+                IEnumerable<InvoiceClass> InvoiceClasslist = await con.QueryAsync<InvoiceClass>(sqlquery, parameters, commandType: CommandType.Text);
+                return InvoiceClasslist.ToList();
+            }
+        }
+        public async Task<List<InvoiceIssuer>> GetInvoiceIssuers() {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                //parameters.Add("Page", Page);
+                var sqlquery = "SELECT * FROM vk.InvoiceIssuer";
+                IEnumerable<InvoiceIssuer> InvoiceIssuerlist = await con.QueryAsync<InvoiceIssuer>(sqlquery, parameters, commandType: CommandType.Text);
+                return InvoiceIssuerlist.ToList();
+            }
+        }
+        public async Task<List<InvoiceType>> GetInvoiceTypes() {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                //parameters.Add("Page", Page);
+                var sqlquery = "SELECT * FROM vk.InvoiceType";
+                IEnumerable<InvoiceType> InvoiceTypelist = await con.QueryAsync<InvoiceType>(sqlquery, parameters, commandType: CommandType.Text);
+                return InvoiceTypelist.ToList();
+            }
+        }
+        public async Task<List<OperationKey>> GetOperationKeys() {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                //parameters.Add("Page", Page);
+                var sqlquery = "SELECT * FROM vk.OperationKey";
+                IEnumerable<OperationKey> OperationKeylist = await con.QueryAsync<OperationKey>(sqlquery, parameters, commandType: CommandType.Text);
+                return OperationKeylist.ToList();
+            }
+        }
+        public async Task<List<OperationType>> GetOperationTypes() {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                //parameters.Add("Page", Page);
+                var sqlquery = "SELECT * FROM vk.OperationType";
+                IEnumerable<OperationType> OperationTypelist = await con.QueryAsync<OperationType>(sqlquery, parameters, commandType: CommandType.Text);
+                return OperationTypelist.ToList();
+            }
+        }
+        //public async Task<string> GetCS() {
+        //    var cs= _configuration.GetConnectionString("DefaultConnection");
+        //    return cs;
+        //}
     }
 }
