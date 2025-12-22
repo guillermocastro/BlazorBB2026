@@ -1,17 +1,47 @@
-﻿
-@inject IStringLocalizer<Resources.Resource> L
+﻿@inject IStringLocalizer<Resources.Resource> L
 @inject ICommonService CommonService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
+
 @page "/"
 <PageTitle>@L["Home"]</PageTitle>
 <CultureSelector />
-<h6>@L["About_txt"]</h6>
-<Currencies />
-<p>@cs</p>
-<p></p>
+<AuthorizeView>
+    <Authorized>
+       <p>@context.User.Identity?.Name</p>
+        @if (isRoleAdmin)
+        {
+            <p>Admin</p>
+        }
+        @if (isRoleAccounting)
+        {
+            <p>Accounting</p>
+        }
+        <p class="bg-secondary">@context.User.IsInRole("Accounting")</p>
+        <p></p>
+        <p class="bg-primary">@context.User.IsInRole("Admin")</p>
+    </Authorized>
+    <NotAuthorized>
+        <Currencies />
+    </NotAuthorized>
+</AuthorizeView>
+
 @code{
-    private string cs { get; set; } = "maui";
+    public System.Security.Principal.IPrincipal User { get; set; }
+    public static string CurrentUserName { get; set; }
+
+    private bool isRoleAdmin { get; set; } = false;
+    private bool isRoleAccounting { get; set; } = false;
+
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
     protected override async Task OnInitializedAsync()
     {
-        cs = "krypto";// await CommonService.GetCS();
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUserName = authenticationState.User.Identity.Name;
+        isRoleAccounting = await CommonService.IsRoleMember(CurrentUserName, "Accounting");
+        isRoleAdmin = await CommonService.IsRoleMember(CurrentUserName, "Admin");
     }
 }

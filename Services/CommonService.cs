@@ -155,9 +155,29 @@ namespace BlazorBB2026.Services
                 return OperationTypelist.ToList();
             }
         }
-        //public async Task<string> GetCS() {
-        //    var cs= _configuration.GetConnectionString("DefaultConnection");
+        //public string GetCS()
+        //{
+        //    var cs = _configuration.GetConnectionString("DefaultConnection") ?? "";
         //    return cs;
         //}
+        public async Task<bool> IsRoleMember(string? username, string? rolename) 
+        {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("user", username);
+                parameters.Add("role", rolename);
+                var sqlquery = "SELECT u.[UserName],r.[Name] AS 'RoleName' FROM [dbo].[AspNetUsers] u INNER JOIN [dbo].[AspNetUserRoles] ur ON u.Id=ur.UserId INNER JOIN [dbo].[AspNetRoles] r ON ur.RoleId=r.Id WHERE u.[UserName]=ISNULL(@user,'') AND r.[Name]=ISNULL(@role,'')";
+                IEnumerable<UserRole> userRoleList = await con.QueryAsync<UserRole>(sqlquery, parameters, commandType: CommandType.Text);
+                if (userRoleList.Any())
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

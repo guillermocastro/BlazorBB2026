@@ -20,8 +20,8 @@ All rights reserved
 ### Milestones
 
 - [ ] DotNet 10 Template
-  - [ ] Multilanguage Support
-  - [ ] Culture Selector
+  - [X] Multilanguage Support
+  - [X] Culture Selector
   - [ ] File Download Support
   - [ ] Secrets Support
   - [ ] Roles Management

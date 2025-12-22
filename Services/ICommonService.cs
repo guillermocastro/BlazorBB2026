@@ -15,5 +15,6 @@ namespace BlazorBB2026.Services
         Task<List<OperationKey>> GetOperationKeys();
         Task<List<OperationType>> GetOperationTypes();
         //Task<string> GetCS();
+        Task<bool> IsRoleMember(string? username,string? rolename);
     }
 }
