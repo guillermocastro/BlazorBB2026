@@ -23,7 +23,7 @@ All rights reserved
   - [X] Multilanguage Support
   - [X] Culture Selector
   - [ ] File Download Support
-  - [ ] Secrets Support
+  - [X] Secrets Support
   - [ ] Roles Management
   - [ ] Mail Support
 - [ ] Database First
@@ -45,8 +45,11 @@ All rights reserved
   - [ ] Cookies
   - [X] Privacy
   - [ ] Contact
-  - [ ] Products and Services
   - [ ] Pricing
+  - [X] Meta Tags
+  - [ ] Announcements
+  - [ ] Articles
+  - [ ] Calendars
 - [ ] Services
   - [ ] CommonService
   - [ ] AccountingService
