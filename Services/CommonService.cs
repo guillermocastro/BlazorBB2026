@@ -179,5 +179,36 @@ namespace BlazorBB2026.Services
                 }
             }
         }
+        public async Task<List<UserRole>> GetUserRoles(string? username)
+        {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                parameters.Add("user", username);
+                var sqlquery = "SELECT u.[UserName],r.[Name] AS 'RoleName' FROM [dbo].[AspNetUsers] u INNER JOIN [dbo].[AspNetUserRoles] ur ON u.Id=ur.UserId INNER JOIN [dbo].[AspNetRoles] r ON ur.RoleId=r.Id WHERE u.[UserName]=ISNULL(@user,'')";
+                IEnumerable<UserRole> userRoleList = await con.QueryAsync<UserRole>(sqlquery, parameters, commandType: CommandType.Text);
+                return userRoleList.ToList();
+            }
+        }
+        public async Task<List<AspNetUsers>> GetAllUsers()
+        {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                var sqlquery = "SELECT * FROM [dbo].[AspNetUsers]";
+                IEnumerable<AspNetUsers> userList = await con.QueryAsync<AspNetUsers>(sqlquery, parameters, commandType: CommandType.Text);
+                return userList.ToList();
+            }
+        }
+        public async Task<List<AspNetRoles>> GetAllRoles()
+        {
+            using (SqlConnection con = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                DynamicParameters parameters = new DynamicParameters();
+                var sqlquery = "SELECT * FROM [dbo].[AspNetRoles]";
+                IEnumerable<AspNetRoles> roleList = await con.QueryAsync<AspNetRoles>(sqlquery, parameters, commandType: CommandType.Text);
+                return roleList.ToList();
+            }
+        }
     }
 }

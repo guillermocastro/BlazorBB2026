@@ -1,0 +1,272 @@
+﻿@page "/MetaTags"
+@inject IStringLocalizer<Resources.Resource> L
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IWebService WebService
+@inject ICommonService CommonService
+<h3>MetaTags</h3>
+@if (MetaTagList == null)
+{
+    <Loader />
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">@L["CurrentPage"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@CurrentPage</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@L["TotalPages"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@TotalPages</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@L["TotalRows"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@TotalRows</a></li>
+                    @if (CurrentPage > 1)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="FirstPage"><IconFirst /></button></li>
+                    }
+                    @if (CurrentPage > 1)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="PreviousPage"><IconPrevious /></button></li>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="NextPage"><IconNext /></button></li>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="LastPage"><IconLast /></button></li>
+                    }
+                </ul>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @if (isRoleWeb || isRoleMarketing)
+                                {
+                                    <button class="btn btn-primary" @onclick="AddNewMetaTag"><IconAdd /></button>
+                                }
+                            </th>
+                            <th>@L["LanguageId"]</th>
+                            <th>@L["Keywords"]</th>
+                            <th>@L["Description"]</th>
+                            <th><button class="btn btn-primary" @onclick="Refresh"><IconRefresh /></button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var metaTag in MetaTagList)
+                        {
+                            <tr>
+                                <td>
+                                    @if (isRoleWeb || isRoleMarketing)
+                                    {
+                                        <button class="btn btn-primary" @onclick="(() => EditMetaTag(metaTag))"><IconUpdate /></button>
+                                    }
+                                </td>
+                                <td>@metaTag.LanguageId</td>
+                                <td>@metaTag.Keywords</td>
+                                <td>@metaTag.Description</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @if (ShowPopup)
+    {
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @if (IsNewRecord)
+                        {
+                            <h3 class="modal-title">@L["New"] @L["Currency"]</h3>
+                        }
+                        else
+                        {
+                            <h3 class="modal-title">@L["Edit"] @L["Currency"]</h3>
+                        }
+                        <!-- Button to close the popup -->
+                        <button class="btn btn-dark"
+                                @onclick="ClosePopup">
+                            <IconCancel />
+                        </button>
+                    </div>
+                    <!-- Edit form for the current reccord -->
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input class="form-control" id="LanguageId" type="text" maxlength="2" placeholder="@L["LanguageId"]" @bind="metaTag.LanguageId" />
+                            <label for="LanguageId">@L["LanguageId"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="Keywords" type="text" maxlength="512" placeholder="@L["Keywords"]" @bind="metaTag.Keywords" />
+                            <label for="Keywords">@L["Keywords"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="Description" type="text" placeholder="@L["Description"]" @bind="metaTag.Description" />
+                            <label for="Description">@L["Description"]</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success"
+                                @onclick="SaveMetaTag">
+                                <IconSave />
+                        </button>
+                        @if (IsNewRecord == false)
+                        {
+                            <button class="btn btn-danger"
+                                    @onclick="DeleteMetaTag">
+                                <IconDelete />
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@code {
+    private string? currentUrl;
+
+    public System.Security.Principal.IPrincipal User { get; set; }
+    public static string CurrentUserName { get; set; }
+
+    private bool isRoleMarketing { get; set; } = false;
+    private bool isRoleWeb { get; set; } = false;
+    
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
+
+    IEnumerable<MetaTag>? MetaTagList;
+    private int _pageSize { get; set; } = 10;
+    private int CurrentPage { get; set; } = 1;
+    private int TotalPages { get; set; } = 0;
+    private int TotalRows { get; set; } = 0;
+    private bool HasNext { get; set; } = false;
+    private bool HasPrevious { get; set; } = false;
+    private string UserIdentityName = "";
+    bool ShowPopup = false;
+    bool ZoomIn = false;
+    bool IsNewRecord = false;
+    private string languageid { get; set; } = "";
+    MetaTag metaTag = new MetaTag();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUserName = authenticationState.User.Identity.Name;
+        isRoleWeb = await CommonService.IsRoleMember(CurrentUserName, "Web");
+        isRoleMarketing = await CommonService.IsRoleMember(CurrentUserName, "Marketing");
+        await Refresh();
+    }
+    private async Task Refresh()
+    {
+        MetaTagList = await WebService.GetMetaTags();
+        if (languageid == "")
+        {
+            TotalRows = MetaTagList.Count();
+            TotalPages = (int)Math.Ceiling(TotalRows / (double)_pageSize);
+            MetaTagList = MetaTagList.Skip((CurrentPage - 1) * _pageSize).Take(_pageSize).ToList();
+        }
+        if (CurrentPage > 1)
+        {
+            HasPrevious = true;
+        }
+        else
+        {
+            HasPrevious = false;
+        }
+        if (CurrentPage < TotalPages)
+        {
+            HasNext = true;
+        }
+        else
+        {
+            HasNext = false;
+        }
+    }
+    void ClosePopup()
+    {
+        // Close the Popup
+        ShowPopup = false;
+    }
+    void AddNewMetaTag()
+    {
+        // Make new object
+        metaTag = new MetaTag();
+
+        metaTag.LanguageId = "";
+        metaTag.Keywords = "";
+        metaTag.Description = "";
+        
+        ShowPopup = true;
+        IsNewRecord = true;
+        languageid = "";
+    }
+    async Task SaveMetaTag()
+    {
+        // Close the Popup
+        ShowPopup = false;
+
+        // A new forecast will have the Id set to 0
+        if (IsNewRecord)
+        {
+            // Create new forecast
+            MetaTag NewMetaTag = new MetaTag();
+            NewMetaTag.LanguageId = metaTag.LanguageId;
+            NewMetaTag.Keywords = metaTag.Keywords;
+            NewMetaTag.Description = metaTag.Description;
+
+            // Save the new row
+            await WebService.PostMetaTags(NewMetaTag);
+        }
+        else
+        {
+            // Update the row
+            await WebService.PutMetaTags(metaTag);
+            languageid = "";
+        }
+        await Refresh();
+    }
+    void EditMetaTag(MetaTag existingMetaTag)
+    {
+        metaTag = existingMetaTag;
+        ShowPopup = true;
+        IsNewRecord = false;
+    }
+    async Task DeleteMetaTag()
+    {
+        ShowPopup = false;
+
+        await WebService.DeleteMetaTags(metaTag);
+        languageid = "";
+        await Refresh();
+    }
+    private async Task FirstPage()
+    {
+        CurrentPage = 1;
+        await Refresh();
+    }
+    private async Task LastPage()
+    {
+        CurrentPage = TotalPages;
+        await Refresh();
+    }
+    private async Task NextPage()
+    {
+        if (HasNext)
+        {
+            CurrentPage = CurrentPage + 1;
+            await Refresh();
+        }
+    }
+    private async Task PreviousPage()
+    {
+        if (HasPrevious)
+        {
+            CurrentPage = CurrentPage - 1;
+            await Refresh();
+        }
+    }
+}

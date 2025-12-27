@@ -16,5 +16,8 @@ namespace BlazorBB2026.Services
         Task<List<OperationType>> GetOperationTypes();
         //Task<string> GetCS();
         Task<bool> IsRoleMember(string? username,string? rolename);
+        Task<List<UserRole>> GetUserRoles(string? username);
+        Task<List<AspNetUsers>> GetAllUsers();
+        Task<List<AspNetRoles>> GetAllRoles();
     }
 }

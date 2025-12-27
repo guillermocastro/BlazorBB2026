@@ -1,11 +1,24 @@
 ﻿@using Microsoft.AspNetCore.Localization
 @using System.Globalization
+@inject IWebService WebService
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Valkian Technologies" />
+    <meta name="copyright" content="Valkian Technologies" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    @if (MetaTagList != null)
+    {
+        @foreach (var metaTag in MetaTagList)
+        {
+            <meta content="@metaTag.Keywords" name="keywords" lang="@metaTag.LanguageId">
+            <meta content="@metaTag.Description" name="description" lang="@metaTag.LanguageId">
+        }
+    }
+    <meta name="robots" content="index" />
     <base href="/" />
     <ResourcePreloader />
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
@@ -32,7 +45,11 @@
 @code {
     [CascadingParameter]
     private HttpContext? HttpContext { get; set; }
-
+    IEnumerable<MetaTag>? MetaTagList;
+    protected override async Task OnInitializedAsync()
+    {
+        MetaTagList = await WebService.GetMetaTags();
+    }
     protected override void OnInitialized()
     {
         HttpContext?.Response.Cookies.Append(

@@ -1,6 +1,11 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Resources.Resource> L
+@inject ICommonService CommonService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Identity;
 
 <nav class="navbar navbar-expand-lg fixed-top navbar-light px-4 px-lg-5 py-3 py-lg-0">
     <a href="/" class="navbar-brand p-0">
@@ -10,6 +15,9 @@
         <span class="fa fa-bars"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
+@*         <form data-permanent>
+            @L["Buscar"]: <input type="text" />
+        </form> *@
         <div class="navbar-nav ms-auto py-0">
             <div class="nav-item dropdown">
                 <a href="/" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Valkian</a>
@@ -33,7 +41,19 @@
                     @* <a href="404.html" class="dropdown-item">404 Page</a> *@
                 </div>
             </div>
-            <div class="nav-item dropdown">
+            @if (isRoleWeb || isRoleMarketing)
+            {
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Web Admin</a>
+                    <div class="dropdown-menu m-0">
+                        <a href="/MetaTags" class="dropdown-item">@L["MetaTags"]</a>
+                        <a href="/Articles" class="dropdown-item">@L["Articles"]</a>
+                        <a href="/Calendars" class="dropdown-item">@L["Calendars"]</a>
+                        <a href="/Announcements" class="dropdown-item">@L["Announcements"]</a>
+                    </div>
+                </div>
+            }
+@*             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                 <div class="dropdown-menu m-0">
                     <a href="/feature" class="dropdown-item">Features</a>
@@ -42,7 +62,7 @@
                     
                     <a href="/404" class="dropdown-item">404 Page</a>
                 </div>
-            </div>
+            </div> *@
             <a href="/Contact" class="nav-item nav-link">Contact Us</a>
         </div>
         
@@ -69,11 +89,30 @@
 </nav>
 @code {
     private string? currentUrl;
+    public System.Security.Principal.IPrincipal User { get; set; }
+    public static string CurrentUserName { get; set; }
+    private bool isRoleAdmin { get; set; } = false;
+    private bool isRoleAccounting { get; set; } = false;
+    private bool isRoleMarketing { get; set; } = false;
+    private bool isRoleWeb { get; set; } = false;
+    private bool isRoleSales { get; set; } = false;
+    private bool isRoleWarehouse { get; set; } = false;
+    private bool isRoleBanking { get; set; } = false;
 
-    protected override void OnInitialized()
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
+    protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUserName = authenticationState.User.Identity.Name;
+        isRoleWeb = await CommonService.IsRoleMember(CurrentUserName, "Web");
+        isRoleMarketing = await CommonService.IsRoleMember(CurrentUserName, "Marketing");
+        isRoleAccounting = await CommonService.IsRoleMember(CurrentUserName, "Accounting");
+        isRoleSales = await CommonService.IsRoleMember(CurrentUserName, "Sales");
+        isRoleBanking = await CommonService.IsRoleMember(CurrentUserName, "Banking");
+        isRoleWarehouse = await CommonService.IsRoleMember(CurrentUserName, "Warehouse");
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
