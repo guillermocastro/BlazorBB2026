@@ -1,9 +1,11 @@
 ﻿@inject IStringLocalizer<Resources.Resource> L
 @inject ICommonService CommonService
+@inject IWebService WebService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization;
 @using Microsoft.AspNetCore.Components.Authorization;
 @using Microsoft.AspNetCore.Identity;
+@using System.Globalization
 
 @page "/"
 <PageTitle>@L["Home"]</PageTitle>
@@ -13,11 +15,29 @@
         <div class="container-fluid feature overflow-hidden py-5">
             <div class="container py-5">
                 <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 900px;">
-                    <h4 class="text-primary">BlueBriks 4.0</h4>
-                    <h1 class="display-5 mb-4">Nueva aplicación en curso</h1>
-                    <p class="mb-0">
-                        Esto es el nuevo BlueBriks 4.0. Refactorizado desde cero para mejorar las funcionalidades como soporte 100% de .Net Core 10.0, seguridad mejorada, Verifactu, Gestión de proyectos y embudo de ventas.
-                    </p>
+                    @if (AnnouncementList!= null)
+                    {
+                        @foreach (var announcement in AnnouncementList)
+                        {
+                            @if (@CultureInfo.CurrentCulture.ToString() == "es-ES")
+                            {
+                                <h4 class="text-primary">Anuncio</h4>
+                                <h1 class="display-5 mb-4">@announcement.TitleES</h1>                                
+                                <p class="mb-0">
+                                    @announcement.DescriptionES
+                                </p>
+                            }
+                            else
+                            {
+                                <h4 class="text-primary">Announcement</h4>
+                                <h1 class="display-5 mb-4">@announcement.TitleEN</h1>
+                                <p class="mb-0">
+                                    @announcement.DescriptionEN
+                                </p>
+                            }
+                            break;
+                        }
+                    }
                 </div>
             </div>
             <div class="row g-4 justify-content-center text-center mb-5">
@@ -36,28 +56,34 @@
                 </div>
             </div>
         </div>
-       <p>@context.User.Identity?.Name</p>
-        @if (isRoleAdmin)
-        {
-            <p>Admin</p>
-        }
-        @if (isRoleAccounting)
-        {
-            <p>Accounting</p>
-        }
-        <p class="bg-secondary">@context.User.IsInRole("Accounting")</p>
-        <p></p>
-        <p class="bg-primary">@context.User.IsInRole("Admin")</p>
     </Authorized>
     <NotAuthorized>
         <div class="container-fluid feature overflow-hidden py-5">
             <div class="container py-5">
                 <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 900px;">
-                    <h4 class="text-primary">BlueBriks 4.0</h4>
-                    <h1 class="display-5 mb-4">Nueva aplicación en curso</h1>
-                    <p class="mb-0">
-                        Esto es el nuevo BlueBriks 4.0. Refactorizado desde cero para mejorar las funcionalidades como soporte 100% de .Net Core 10.0, seguridad mejorada, Verifactu, Gestión de proyectos y embudo de ventas.
-                    </p>
+                    @if (AnnouncementList != null)
+                    {
+                        @foreach (var announcement in AnnouncementList)
+                        {
+                            @if (@CultureInfo.CurrentCulture.ToString() == "es-ES")
+                            {
+                                <h4 class="text-primary">Anuncio</h4>
+                                <h1 class="display-5 mb-4">@announcement.TitleES</h1>
+                                <p class="mb-0">
+                                    @announcement.DescriptionES
+                                </p>
+                            }
+                            else
+                            {
+                                <h4 class="text-primary">Announcement</h4>
+                                <h1 class="display-5 mb-4">@announcement.TitleEN</h1>
+                                <p class="mb-0">
+                                    @announcement.DescriptionEN
+                                </p>
+                            }
+                            break;
+                        }
+                    }
                 </div>
                 <div class="row g-4 justify-content-center text-center mb-5">
                     <div class="col-md-6 col-lg-4 col-xl-3 wow fadeInUp" data-wow-delay="0.1s">
@@ -219,7 +245,7 @@
 
                     <div class="col-12 wow fadeInUp" data-wow-delay="0.1s">
                         <div class="my-3">
-                            <a href="#" class="btn btn-primary d-inline rounded-pill px-5 py-3">More Features</a>
+                            <a href="/Testimonial" class="btn btn-primary d-inline rounded-pill px-5 py-3">@L["Testimonial"]</a>
                         </div>
                     </div>
                 </div>
@@ -230,18 +256,18 @@
                         </div>
                     </div>
                     <div class="col-lg-6 wow fadeInRight" data-wow-delay="0.1s">
-                        <h4 class="text-primary">Features</h4>
-                        <h1 class="display-5 mb-4">Push Your Visitors Into Happy Customers</h1>
+                        @* <h4 class="text-primary">Features</h4> *@
+                        @* <h1 class="display-5 mb-4">Push Your Visitors Into Happy Customers</h1>
                         <p class="mb-4">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, suscipit itaque quaerat dicta porro illum, autem, molestias ut animi ab aspernatur dolorum officia nam dolore. Voluptatibus aliquam earum labore atque.
-                        </p>
+                            ERP, CRM, MIS, Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium, suscipit itaque quaerat dicta porro illum, autem, molestias ut animi ab aspernatur dolorum officia nam dolore. Voluptatibus aliquam earum labore atque.
+                        </p> *@
                         <div class="row g-4">
                             <div class="col-6">
                                 <div class="d-flex">
                                     <i class="fas fa-newspaper fa-4x text-secondary"></i>
                                     <div class="d-flex flex-column ms-3">
-                                        <h2 class="mb-0 fw-bold">285</h2>
-                                        <small class="text-dark">Created Projects</small>
+                                        <h2 class="mb-0 fw-bold">12</h2>
+                                        <small class="text-dark">@L["Active Projects"]</small>
                                     </div>
                                 </div>
                             </div>
@@ -249,15 +275,15 @@
                                 <div class="d-flex">
                                     <i class="fas fa-users fa-4x text-secondary"></i>
                                     <div class="d-flex flex-column ms-3">
-                                        <h2 class="mb-0 fw-bold">6560</h2>
-                                        <small class="text-dark">Happy Clients</small>
+                                        <h2 class="mb-0 fw-bold">6</h2>
+                                        <small class="text-dark">@L["Happy Clients"]</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="my-4">
+                        @* <div class="my-4">
                             <a href="#" class="btn btn-primary rounded-pill py-3 px-5">Read More</a>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
             </div>
@@ -273,11 +299,14 @@
     private bool isRoleAdmin { get; set; } = false;
     private bool isRoleAccounting { get; set; } = false;
 
+    IEnumerable<Announcement>? AnnouncementList;
+
     System.Security.Claims.ClaimsPrincipal CurrentUser;
 
     protected override async Task OnInitializedAsync()
     {
         var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        AnnouncementList = await WebService.GetAnnouncements();
         CurrentUserName = authenticationState.User.Identity.Name;
         isRoleAccounting = await CommonService.IsRoleMember(CurrentUserName, "Accounting");
         isRoleAdmin = await CommonService.IsRoleMember(CurrentUserName, "Admin");

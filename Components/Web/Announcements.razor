@@ -1,5 +1,284 @@
 ﻿@page "/Announcements"
-
+@inject IStringLocalizer<Resources.Resource> L
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IWebService WebService
+@inject ICommonService CommonService
+<h3>@L["Announcements"]</h3>
+@if (AnnouncementList == null)
+{
+    <img src="/img/loader2.gif" alt="Loading..." />
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">@L["CurrentPage"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@CurrentPage</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@L["TotalPages"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@TotalPages</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@L["TotalRows"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@TotalRows</a></li>
+                    @if (CurrentPage > 1)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="FirstPage"><IconFirst /></button></li>
+                    }
+                    @if (CurrentPage > 1)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="PreviousPage"><IconPrevious /></button></li>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="NextPage"><IconNext /></button></li>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="LastPage"><IconLast /></button></li>
+                    }
+                </ul>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @if (isRoleWeb || isRoleMarketing)
+                                {
+                                    <button class="btn btn-primary" @onclick="AddNewAnnouncement"><IconAdd /></button>
+                                }
+                            </th>
+                            <th>@L["Date"]</th>
+                            <th>@L["TitleES"]</th>
+                            <th>@L["TitleES"]</th>
+                            <th>@L["DescriptionES"]</th>
+                            <th>@L["DescriptionES"]</th>
+                            <th><button class="btn btn-primary" @onclick="Refresh"><IconRefresh /></button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Announcement in AnnouncementList)
+                        {
+                            <tr>
+                                <td>
+                                    @if (isRoleWeb || isRoleMarketing)
+                                    {
+                                        <button class="btn btn-primary" @onclick="(() => EditAnnouncement(Announcement))"><IconUpdate /></button>
+                                    }
+                                </td>
+                                <td>@Announcement.AnnouncementDate</td>
+                                <td>@Announcement.TitleES</td>
+                                <td>@Announcement.TitleEN</td>
+                                <td>@Announcement.DescriptionES</td>
+                                <td>@Announcement.DescriptionEN</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @if (ShowPopup)
+    {
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @if (IsNewRecord)
+                        {
+                            <h3 class="modal-title">@L["New"] @L["Currency"]</h3>
+                        }
+                        else
+                        {
+                            <h3 class="modal-title">@L["Edit"] @L["Currency"]</h3>
+                        }
+                        <!-- Button to close the popup -->
+                        <button class="btn btn-dark"
+                                @onclick="ClosePopup">
+                            <IconCancel />
+                        </button>
+                    </div>
+                    <!-- Edit form for the current reccord -->
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input class="form-control" id="AnnouncementDate" type="date" placeholder="@L["AnnouncementDate"]" @bind="Announcement.AnnouncementDate" />
+                            <label for="AnnouncementDate">@L["AnnouncementDate"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="TitleES" type="text" maxlength="128" placeholder="@L["TitleES"]" @bind="Announcement.TitleES" />
+                            <label for="TitleES">@L["TitleES"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="TitleEN" type="text" maxlength="128" placeholder="@L["TitleEN"]" @bind="Announcement.TitleEN" />
+                            <label for="TitleEN">@L["TitleEN"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="DescriptionES" type="text" placeholder="@L["DescriptionES"]" @bind="Announcement.DescriptionES" />
+                            <label for="DescriptionES">@L["DescriptionES"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="DescriptionEN" type="text" placeholder="@L["DescriptionEN"]" @bind="Announcement.DescriptionEN" />                            
+                            <label for="DescriptionEN">@L["DescriptionEN"]</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success"
+                                @onclick="SaveAnnouncement">
+                                <IconSave />
+                        </button>
+                        @if (IsNewRecord == false)
+                        {
+                            <button class="btn btn-danger"
+                                    @onclick="DeleteAnnouncement">
+                                <IconDelete />
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
 @code {
+    public System.Security.Principal.IPrincipal User { get; set; }
+    public static string? CurrentUserName { get; set; }
 
+    private bool isRoleMarketing { get; set; } = false;
+    private bool isRoleWeb { get; set; } = false;
+    
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+ 
+    IEnumerable<Announcement>? AnnouncementList;
+    private int _pageSize { get; set; } = 10;
+    private int CurrentPage { get; set; } = 1;
+    private int TotalPages { get; set; } = 0;
+    private int TotalRows { get; set; } = 0;
+    private bool HasNext { get; set; } = false;
+    private bool HasPrevious { get; set; } = false;
+    //private string UserIdentityName = "";
+    bool ShowPopup = false;
+    bool IsNewRecord = false;
+    private string languageid { get; set; } = "";
+    Announcement Announcement = new Announcement();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUserName = authenticationState.User.Identity.Name;
+        isRoleWeb = await CommonService.IsRoleMember(CurrentUserName, "Web");
+        isRoleMarketing = await CommonService.IsRoleMember(CurrentUserName, "Marketing");
+        await Refresh();
+    }
+    private async Task Refresh()
+    {
+        AnnouncementList = await WebService.GetAnnouncements();
+        if (languageid == "")
+        {
+            TotalRows = AnnouncementList.Count();
+            TotalPages = (int)Math.Ceiling(TotalRows / (double)_pageSize);
+            AnnouncementList = AnnouncementList.Skip((CurrentPage - 1) * _pageSize).Take(_pageSize).ToList();
+        }
+        if (CurrentPage > 1)
+        {
+            HasPrevious = true;
+        }
+        else
+        {
+            HasPrevious = false;
+        }
+        if (CurrentPage < TotalPages)
+        {
+            HasNext = true;
+        }
+        else
+        {
+            HasNext = false;
+        }
+    }
+    void ClosePopup()
+    {
+        // Close the Popup
+        ShowPopup = false;
+    }
+    void AddNewAnnouncement()
+    {
+        // Make new object
+        Announcement = new Announcement();
+
+        Announcement.AnnouncementDate = DateTime.Today;
+        Announcement.TitleES = "";
+        Announcement.TitleEN = "";
+        Announcement.DescriptionES = "";
+        Announcement.DescriptionEN = "";
+        
+        ShowPopup = true;
+        IsNewRecord = true;
+        languageid = "";
+    }
+    async Task SaveAnnouncement()
+    {
+        // Close the Popup
+        ShowPopup = false;
+
+        // A new forecast will have the Id set to 0
+        if (IsNewRecord)
+        {
+            // Create new record
+            Announcement NewAnnouncement = new Announcement();
+            //NewAnnouncement.AnnouncementId = Announcement.AnnouncementId;
+            NewAnnouncement.AnnouncementDate = Announcement.AnnouncementDate;
+            NewAnnouncement.TitleES = Announcement.TitleES;
+            NewAnnouncement.TitleEN = Announcement.TitleEN;
+            NewAnnouncement.DescriptionES = Announcement.DescriptionES;
+            NewAnnouncement.DescriptionEN = Announcement.DescriptionEN;
+            // Save the new row
+            await WebService.PostAnnouncement(NewAnnouncement);
+        }
+        else
+        {
+            // Update the row
+            await WebService.PutAnnouncement(Announcement);
+            languageid = "";
+        }
+        await Refresh();
+    }
+    void EditAnnouncement(Announcement existingAnnouncement)
+    {
+        Announcement = existingAnnouncement;
+        ShowPopup = true;
+        IsNewRecord = false;
+    }
+    async Task DeleteAnnouncement()
+    {
+        ShowPopup = false;
+
+        await WebService.DeleteAnnouncement(Announcement);
+        languageid = "";
+        await Refresh();
+    }
+    private async Task FirstPage()
+    {
+        CurrentPage = 1;
+        await Refresh();
+    }
+    private async Task LastPage()
+    {
+        CurrentPage = TotalPages;
+        await Refresh();
+    }
+    private async Task NextPage()
+    {
+        if (HasNext)
+        {
+            CurrentPage = CurrentPage + 1;
+            await Refresh();
+        }
+    }
+    private async Task PreviousPage()
+    {
+        if (HasPrevious)
+        {
+            CurrentPage = CurrentPage - 1;
+            await Refresh();
+        }
+    }
 }

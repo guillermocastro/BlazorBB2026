@@ -1,5 +1,311 @@
 ﻿@page "/Articles"
-
+@inject IStringLocalizer<Resources.Resource> L
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IWebService WebService
+@inject ICommonService CommonService
+<h3>@L["Articles"]</h3>
+@if (ArticleList == null)
+{
+    <img src="/img/loader2.gif" alt="Loading..." />
+}
+else
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">@L["CurrentPage"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@CurrentPage</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@L["TotalPages"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@TotalPages</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@L["TotalRows"]</a></li>
+                    <li class="page-item"><a class="page-link" href="#">@TotalRows</a></li>
+                    @if (CurrentPage > 1)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="FirstPage"><IconFirst /></button></li>
+                    }
+                    @if (CurrentPage > 1)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="PreviousPage"><IconPrevious /></button></li>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="NextPage"><IconNext /></button></li>
+                    }
+                    @if (CurrentPage < TotalPages)
+                    {
+                        <li class="page-item"><button class="btn btn-primary" @onclick="LastPage"><IconLast /></button></li>
+                    }
+                </ul>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                @if (isRoleWeb || isRoleMarketing)
+                                {
+                                    <button class="btn btn-primary" @onclick="AddNewArticle"><IconAdd /></button>
+                                }
+                            </th>
+                            <th>@L["ArticleId"]</th>
+                            <th>@L["TitleES"]</th>
+                            <th>@L["TitleES"]</th>
+                            <th>@L["DescriptionES"]</th>
+                            <th>@L["DescriptionES"]</th>
+                            <th><button class="btn btn-primary" @onclick="Refresh"><IconRefresh /></button></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Article in ArticleList)
+                        {
+                            <tr>
+                                <td>
+                                    @if (isRoleWeb || isRoleMarketing)
+                                    {
+                                        <button class="btn btn-primary" @onclick="(() => EditArticle(Article))"><IconUpdate /></button>
+                                    }
+                                </td>
+                                <td>@article.ArticleId</td>
+                                <td>@article.TitleES</td>
+                                <td>@article.TitleEN</td>
+                                <td>@article.DescriptionES</td>
+                                <td>@article.DescriptionEN</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @if (ShowPopup)
+    {
+        <div class="modal" tabindex="-1" style="display:block" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @if (IsNewRecord)
+                        {
+                            <h3 class="modal-title">@L["New"] @L["Currency"]</h3>
+                        }
+                        else
+                        {
+                            <h3 class="modal-title">@L["Edit"] @L["Currency"]</h3>
+                        }
+                        <!-- Button to close the popup -->
+                        <button class="btn btn-dark"
+                                @onclick="ClosePopup">
+                            <IconCancel />
+                        </button>
+                    </div>
+                    <!-- Edit form for the current reccord -->
+                    <div class="modal-body">
+                        <div class="form-floating">
+                            <input class="form-control" id="ArticleId" type="number" min="0" step="10" placeholder="@L["ArticleId"]" @bind="article.ArticleId" />
+                            <label for="ArticleId">@L["ArticleId"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="Page" type="text" maxlength="64" placeholder="@L["Page"]" @bind="article.Page" />
+                            <label for="Page">@L["Page"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="TitleES" type="text" maxlength="128" placeholder="@L["TitleES"]" @bind="article.TitleES" />
+                            <label for="TitleES">@L["TitleES"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="TitleEN" type="text" maxlength="128" placeholder="@L["TitleEN"]" @bind="article.TitleEN" />
+                            <label for="TitleEN">@L["TitleEN"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="Svg" type="text" maxlength="255" placeholder="@L["Svg"]" @bind="article.Svg" />
+                            <label for="Svg">@L["Svg"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="DescriptionES" type="text" placeholder="@L["DescriptionES"]" @bind="article.DescriptionES" />
+                            <label for="DescriptionES">@L["DescriptionES"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="DescriptionEN" type="text" placeholder="@L["DescriptionEN"]" @bind="article.DescriptionEN" />
+                            <label for="DescriptionEN">@L["DescriptionEN"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="Url" type="text" maxlength="128" placeholder="@L["Url"]" @bind="article.Url" />
+                            <label for="Url">@L["Url"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" @bind="@article.IsEnabled" />
+                                @L["IsEnabled"]
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success"
+                                @onclick="SaveArticle">
+                            <IconSave />
+                        </button>
+                        @if (IsNewRecord == false)
+                        {
+                            <button class="btn btn-danger"
+                                    @onclick="DeleteArticle">
+                                <IconDelete />
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
 @code {
+    public System.Security.Principal.IPrincipal User { get; set; }
+    public static string? CurrentUserName { get; set; }
 
+    private bool isRoleMarketing { get; set; } = false;
+    private bool isRoleWeb { get; set; } = false;
+
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
+    IEnumerable<Article>? ArticleList;
+    private int _pageSize { get; set; } = 10;
+    private int CurrentPage { get; set; } = 1;
+    private int TotalPages { get; set; } = 0;
+    private int TotalRows { get; set; } = 0;
+    private bool HasNext { get; set; } = false;
+    private bool HasPrevious { get; set; } = false;
+    //private string UserIdentityName = "";
+    bool ShowPopup = false;
+    bool IsNewRecord = false;
+    private string languageid { get; set; } = "";
+    Article article = new Article();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        CurrentUserName = authenticationState.User.Identity.Name;
+        isRoleWeb = await CommonService.IsRoleMember(CurrentUserName, "Web");
+        isRoleMarketing = await CommonService.IsRoleMember(CurrentUserName, "Marketing");
+        await Refresh();
+    }
+    private async Task Refresh()
+    {
+        ArticleList = await WebService.GetArticles();
+        if (languageid == "")
+        {
+            TotalRows = ArticleList.Count();
+            TotalPages = (int)Math.Ceiling(TotalRows / (double)_pageSize);
+            ArticleList = ArticleList.Skip((CurrentPage - 1) * _pageSize).Take(_pageSize).ToList();
+        }
+        if (CurrentPage > 1)
+        {
+            HasPrevious = true;
+        }
+        else
+        {
+            HasPrevious = false;
+        }
+        if (CurrentPage < TotalPages)
+        {
+            HasNext = true;
+        }
+        else
+        {
+            HasNext = false;
+        }
+    }
+    void ClosePopup()
+    {
+        // Close the Popup
+        ShowPopup = false;
+    }
+    void AddNewArticle()
+    {
+        // Make new object
+        article = new Article();
+
+        article.ArticleId = 10;
+        article.Page = "";
+        article.TitleES = "";
+        article.TitleEN = "";
+        article.Svg = "";
+        article.TextES = "";
+        article.TextEN = "";
+        article.DescriptionES = "";
+        article.DescriptionEN = "";
+        article.Url = "";
+        article.IsEnabled = true;
+
+        ShowPopup = true;
+        IsNewRecord = true;
+        languageid = "";
+    }
+    async Task SaveArticle()
+    {
+        // Close the Popup
+        ShowPopup = false;
+
+        // A new forecast will have the Id set to 0
+        if (IsNewRecord)
+        {
+            // Create new record
+            Article NewArticle = new Article();
+            //Newarticle.ArticleId = article.ArticleId;
+            NewArticle.ArticleId = article.ArticleId;
+            NewArticle.Page = article.Page;
+            NewArticle.TitleES = article.TitleES;
+            NewArticle.TitleEN = article.TitleEN;
+            NewArticle.Svg = article.Svg;
+            NewArticle.DescriptionES = article.DescriptionES;
+            NewArticle.DescriptionEN = article.DescriptionEN;
+            NewArticle.Url = article.Url;
+            NewArticle.IsEnabled=article.IsEnabled;
+            // Save the new row
+            await WebService.PostArticle(NewArticle);
+        }
+        else
+        {
+            // Update the row
+            await WebService.PutArticle(article);
+            languageid = "";
+        }
+        await Refresh();
+    }
+    void EditArticle(Article existingArticle)
+    {
+        article = existingArticle;
+        ShowPopup = true;
+        IsNewRecord = false;
+    }
+    async Task DeleteArticle()
+    {
+        ShowPopup = false;
+
+        await WebService.DeleteArticle(article);
+        await Refresh();
+    }
+    private async Task FirstPage()
+    {
+        CurrentPage = 1;
+        await Refresh();
+    }
+    private async Task LastPage()
+    {
+        CurrentPage = TotalPages;
+        await Refresh();
+    }
+    private async Task NextPage()
+    {
+        if (HasNext)
+        {
+            CurrentPage = CurrentPage + 1;
+            await Refresh();
+        }
+    }
+    private async Task PreviousPage()
+    {
+        if (HasPrevious)
+        {
+            CurrentPage = CurrentPage - 1;
+            await Refresh();
+        }
+    }
 }

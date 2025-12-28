@@ -91,7 +91,7 @@ namespace BlazorBB2026.Services
             List<Article> articles = new List<Article>();
             using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                var result = await conn.QueryAsync<Article>("SELECT ArticleId, TitleES, TitleEN, Svg, TextES, TextEN, DescriptionES, DescriptionEN, Url, IsEnabled FROM Articles ORDER BY ArticleId");
+                var result = await conn.QueryAsync<Article>("SELECT ArticleId, [Page], TitleES, TitleEN, Svg, TextES, TextEN, DescriptionES, DescriptionEN, Url, IsEnabled FROM [vk].[Article] ORDER BY ArticleId");
                 articles = result.ToList();
             }
             return articles;
@@ -143,12 +143,12 @@ namespace BlazorBB2026.Services
         public async Task<string> PostArticle(Article article) {
             using (var conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                const string sqlquery = @"INSERT INTO [vk].[Article] ([Page],[TitleES],[TitleEN],[Svg],[TextES],[TextEN],[DescriptionES],[DescriptionEN],[Url],[IsEnabled]) VALUES (@Page,@TitleES,@TitleEN,@Svg,@TextES,@TextEN,@DescriptionES,@DescriptionEN,@Url,@IsEnabled)";
+                const string sqlquery = @"INSERT INTO [vk].[Article] ([ArticleId],[Page],[TitleES],[TitleEN],[Svg],[TextES],[TextEN],[DescriptionES],[DescriptionEN],[Url],[IsEnabled]) VALUES (@ArticleId,@Page,@TitleES,@TitleEN,@Svg,@TextES,@TextEN,@DescriptionES,@DescriptionEN,@Url,@IsEnabled)";
                 if (conn.State == ConnectionState.Closed)
                     conn.Open();
                 try
                 {
-                    await conn.ExecuteAsync(sqlquery, new { article.Page, article.TitleES, article.TitleEN, article.Svg, article.TextES, article.TextEN, article.DescriptionES, article.DescriptionEN, article.Url, article.IsEnabled }, commandType: CommandType.Text);
+                    await conn.ExecuteAsync(sqlquery, new { article.ArticleId, article.Page, article.TitleES, article.TitleEN, article.Svg, article.TextES, article.TextEN, article.DescriptionES, article.DescriptionEN, article.Url, article.IsEnabled }, commandType: CommandType.Text);
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +166,7 @@ namespace BlazorBB2026.Services
             List<Announcement> announcements = new List<Announcement>();
             using (SqlConnection conn = new SqlConnection(_configuration.GetConnectionString("DefaultConnection")))
             {
-                var result = await conn.QueryAsync<Announcement>("SELECT AnnouncementId, AnnouncementDate, TitleES, TitleEN, DescriptionES, DescriptionEN FROM Announcements ORDER BY AnnouncementDate DESC");
+                var result = await conn.QueryAsync<Announcement>("SELECT AnnouncementId, AnnouncementDate, TitleES, TitleEN, DescriptionES, DescriptionEN FROM vk.Announcement ORDER BY AnnouncementDate DESC");
                 announcements = result.ToList();
             }
             return announcements;

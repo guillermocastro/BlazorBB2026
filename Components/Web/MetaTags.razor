@@ -6,7 +6,7 @@
 <h3>MetaTags</h3>
 @if (MetaTagList == null)
 {
-    <Loader />
+    <img src="/img/loader2.gif" alt='@L["Loading..."]' />
 }
 else
 {
@@ -127,15 +127,13 @@ else
     }
 }
 @code {
-    private string? currentUrl;
-
-    public System.Security.Principal.IPrincipal User { get; set; }
-    public static string CurrentUserName { get; set; }
+    //public System.Security.Principal.IPrincipal User { get; set; }
+    public static string? CurrentUserName { get; set; }
 
     private bool isRoleMarketing { get; set; } = false;
     private bool isRoleWeb { get; set; } = false;
     
-    System.Security.Claims.ClaimsPrincipal CurrentUser;
+    //System.Security.Claims.ClaimsPrincipal CurrentUser;
 
 
     IEnumerable<MetaTag>? MetaTagList;
@@ -145,9 +143,8 @@ else
     private int TotalRows { get; set; } = 0;
     private bool HasNext { get; set; } = false;
     private bool HasPrevious { get; set; } = false;
-    private string UserIdentityName = "";
+    //private string UserIdentityName = "";
     bool ShowPopup = false;
-    bool ZoomIn = false;
     bool IsNewRecord = false;
     private string languageid { get; set; } = "";
     MetaTag metaTag = new MetaTag();

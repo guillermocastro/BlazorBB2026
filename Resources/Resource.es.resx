@@ -1227,4 +1227,16 @@ Al prestar los Servicios, el Contratista se compromete a cumplir con todos los p
   <data name="Websites" xml:space="preserve">
     <value>Sitios web</value>
   </data>
+  <data name="Active Projects" xml:space="preserve">
+    <value>Líneas de negocio activas</value>
+  </data>
+  <data name="Happy Clients" xml:space="preserve">
+    <value>Clientes satisfechos</value>
+  </data>
+  <data name="Announcements" xml:space="preserve">
+    <value>Anuncios</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Cargando...</value>
+  </data>
 </root>

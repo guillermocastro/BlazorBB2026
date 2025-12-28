@@ -1226,4 +1226,16 @@ In delivering the Services, the Contractor agrees to comply with all Change Cont
   <data name="Websites" xml:space="preserve">
     <value>Websites</value>
   </data>
+  <data name="Active Projects" xml:space="preserve">
+    <value>Active Business Lines</value>
+  </data>
+  <data name="Happy Clients" xml:space="preserve">
+    <value>Happy Clients</value>
+  </data>
+  <data name="Announcements" xml:space="preserve">
+    <value>Announcements</value>
+  </data>
+  <data name="Loading..." xml:space="preserve">
+    <value>Loading...</value>
+  </data>
 </root>
