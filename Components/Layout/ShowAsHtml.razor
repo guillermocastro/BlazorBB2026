@@ -1,0 +1,18 @@
+﻿@page "/ShowAsHtml"
+@using Microsoft.AspNetCore.Components
+
+@htmlMarkup
+    
+@code {
+    [Parameter]
+    public string HtmlContent { get; set; } = string.Empty;
+
+    private MarkupString htmlMarkup;
+
+    protected override void OnInitialized()
+    {
+        htmlMarkup = new MarkupString(HtmlContent);
+    }
+
+}
+

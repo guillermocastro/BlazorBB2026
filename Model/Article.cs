@@ -2,7 +2,7 @@
 {
     public class Article
     {
-        public int ArticleId { get; set; }
+        public decimal ArticleId { get; set; }
         public string Page { get; set; } = null!;
         public string TitleES { get; set; } = null!;
         public string TitleEN { get; set; } = null!;

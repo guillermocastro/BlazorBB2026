@@ -3,78 +3,85 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IWebService WebService
 @inject ICommonService CommonService
-<h3>@L["Articles"]</h3>
+@using System.Globalization
+@* <h3>@L["Articles"]</h3> *@
 @if (ArticleList == null)
 {
     <img src="/img/loader2.gif" alt="Loading..." />
 }
 else
 {
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="#">@L["CurrentPage"]</a></li>
-                    <li class="page-item"><a class="page-link" href="#">@CurrentPage</a></li>
-                    <li class="page-item"><a class="page-link" href="#">@L["TotalPages"]</a></li>
-                    <li class="page-item"><a class="page-link" href="#">@TotalPages</a></li>
-                    <li class="page-item"><a class="page-link" href="#">@L["TotalRows"]</a></li>
-                    <li class="page-item"><a class="page-link" href="#">@TotalRows</a></li>
-                    @if (CurrentPage > 1)
+    @if (isRoleWeb || isRoleMarketing)
+    {
+        <button class="btn btn-primary" @onclick="AddNewArticle"><IconAdd /></button>
+    }
+    <div class="container-fluid feature overflow-hidden py-5">
+            <div class="container py-5">
+                @if (ArticleList != null)
+                {
+                    @foreach (var article in ArticleList)
                     {
-                        <li class="page-item"><button class="btn btn-primary" @onclick="FirstPage"><IconFirst /></button></li>
-                    }
-                    @if (CurrentPage > 1)
-                    {
-                        <li class="page-item"><button class="btn btn-primary" @onclick="PreviousPage"><IconPrevious /></button></li>
-                    }
-                    @if (CurrentPage < TotalPages)
-                    {
-                        <li class="page-item"><button class="btn btn-primary" @onclick="NextPage"><IconNext /></button></li>
-                    }
-                    @if (CurrentPage < TotalPages)
-                    {
-                        <li class="page-item"><button class="btn btn-primary" @onclick="LastPage"><IconLast /></button></li>
-                    }
-                </ul>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>
-                                @if (isRoleWeb || isRoleMarketing)
-                                {
-                                    <button class="btn btn-primary" @onclick="AddNewArticle"><IconAdd /></button>
-                                }
-                            </th>
-                            <th>@L["ArticleId"]</th>
-                            <th>@L["TitleES"]</th>
-                            <th>@L["TitleES"]</th>
-                            <th>@L["DescriptionES"]</th>
-                            <th>@L["DescriptionES"]</th>
-                            <th><button class="btn btn-primary" @onclick="Refresh"><IconRefresh /></button></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var Article in ArticleList)
+                        @if (@CultureInfo.CurrentCulture.ToString() == "es-ES")
                         {
-                            <tr>
-                                <td>
-                                    @if (isRoleWeb || isRoleMarketing)
-                                    {
-                                        <button class="btn btn-primary" @onclick="(() => EditArticle(Article))"><IconUpdate /></button>
-                                    }
-                                </td>
-                                <td>@article.ArticleId</td>
-                                <td>@article.TitleES</td>
-                                <td>@article.TitleEN</td>
-                                <td>@article.DescriptionES</td>
-                                <td>@article.DescriptionEN</td>
-                                <td>&nbsp;</td>
-                            </tr>
+                            <div class="row g-4 justify-content-center text-center mb-5">
+                                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="@article.ArticleId s">
+                                    <div class="text-center p-4">
+                                        <div class="d-inline-block rounded bg-light p-4 mb-4">
+                                            <ShowAsHtml HtmlContent="@article.Svg" />
+                                        </div>
+                                        <div class="feature-content">
+                                            @if (isRoleWeb || isRoleMarketing)
+                                            {
+                                                <button class="btn btn-primary" @onclick="(() => EditArticle(article))"><IconUpdate /></button>
+                                            }
+                                            @if (@article.Url == "#")
+                                            {
+                                                <a class="h4">@article.TitleES </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="@article.Url" class="h4">@article.TitleES <i class="fa fa-long-arrow-alt-right"></i></a>
+                                            }
+                                            <p class="mt-4 mb-0">
+                                                @article.TextES
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    }
+                    else
+                    {
+                            <div class="row g-4 justify-content-center text-center mb-5">
+                                <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="@article.ArticleId s">
+                                    <div class="text-center p-4">
+                                        <div class="d-inline-block rounded bg-light p-4 mb-4">
+                                            <ShowAsHtml HtmlContent="@article.Svg" />
+                                        </div>
+                                        <div class="feature-content">
+                                            @if (isRoleWeb || isRoleMarketing)
+                                            {
+                                                <button class="btn btn-primary" @onclick="(() => EditArticle(article))"><IconUpdate /></button>
+                                            }
+                                            @if (@article.Url == "#")
+                                            {
+                                                <a class="h4">@article.TitleEN </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="@article.Url" class="h4">@article.TitleEN <i class="fa fa-long-arrow-alt-right"></i></a>
+                                            }
+                                            <p class="mt-4 mb-0">
+                                                @article.TextEN
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                        
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                }
+            }
         </div>
     </div>
     @if (ShowPopup)
@@ -100,7 +107,7 @@ else
                     <!-- Edit form for the current reccord -->
                     <div class="modal-body">
                         <div class="form-floating">
-                            <input class="form-control" id="ArticleId" type="number" min="0" step="10" placeholder="@L["ArticleId"]" @bind="article.ArticleId" />
+                            <input class="form-control" id="ArticleId" type="number" min="0.1" step="0.1" placeholder="@L["ArticleId"]" @bind="article.ArticleId" />
                             <label for="ArticleId">@L["ArticleId"]</label>
                         </div>
                         <div class="form-floating">
@@ -116,20 +123,28 @@ else
                             <label for="TitleEN">@L["TitleEN"]</label>
                         </div>
                         <div class="form-floating">
-                            <input class="form-control" id="Svg" type="text" maxlength="255" placeholder="@L["Svg"]" @bind="article.Svg" />
+                            <input class="form-control" id="Svg" type="text" placeholder="@L["Svg"]" @bind="article.Svg" />
                             <label for="Svg">@L["Svg"]</label>
-                        </div>
-                        <div class="form-floating">
-                            <input class="form-control" id="DescriptionES" type="text" placeholder="@L["DescriptionES"]" @bind="article.DescriptionES" />
-                            <label for="DescriptionES">@L["DescriptionES"]</label>
-                        </div>
-                        <div class="form-floating">
-                            <input class="form-control" id="DescriptionEN" type="text" placeholder="@L["DescriptionEN"]" @bind="article.DescriptionEN" />
-                            <label for="DescriptionEN">@L["DescriptionEN"]</label>
                         </div>
                         <div class="form-floating">
                             <input class="form-control" id="Url" type="text" maxlength="128" placeholder="@L["Url"]" @bind="article.Url" />
                             <label for="Url">@L["Url"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="TextES" type="text" maxlength="128" placeholder="@L["TextES"]" @bind="article.TextES" />
+                            <label for="TextES">@L["TextES"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <input class="form-control" id="TextEN" type="text" maxlength="128" placeholder="@L["TextEN"]" @bind="article.TextEN" />
+                            <label for="TextEN">@L["TextEN"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" id="DescriptionES" placeholder="@L["DescriptionES"]" @bind="@article.DescriptionES"></textarea>
+                            <label for="DescriptionES">@L["DescriptionES"]</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" id="DescriptionEN" placeholder="@L["DescriptionEN"]" @bind="@article.DescriptionEN"></textarea>
+                            <label for="DescriptionEN">@L["DescriptionEN"]</label>
                         </div>
                         <div class="form-floating">
                             <div class="form-check form-switch">
@@ -159,14 +174,13 @@ else
 @code {
     public System.Security.Principal.IPrincipal User { get; set; }
     public static string? CurrentUserName { get; set; }
-
     private bool isRoleMarketing { get; set; } = false;
     private bool isRoleWeb { get; set; } = false;
-
+    private string transactionMsg { get; set; } = "";
     System.Security.Claims.ClaimsPrincipal CurrentUser;
 
     IEnumerable<Article>? ArticleList;
-    private int _pageSize { get; set; } = 10;
+    private int _pageSize { get; set; } = 100;
     private int CurrentPage { get; set; } = 1;
     private int TotalPages { get; set; } = 0;
     private int TotalRows { get; set; } = 0;
@@ -222,7 +236,7 @@ else
         // Make new object
         article = new Article();
 
-        article.ArticleId = 10;
+        article.ArticleId = 0;
         article.Page = "";
         article.TitleES = "";
         article.TitleEN = "";
@@ -253,18 +267,20 @@ else
             NewArticle.Page = article.Page;
             NewArticle.TitleES = article.TitleES;
             NewArticle.TitleEN = article.TitleEN;
+            NewArticle.TextES = article.TextES;
+            NewArticle.TextEN = article.TextEN;
             NewArticle.Svg = article.Svg;
             NewArticle.DescriptionES = article.DescriptionES;
             NewArticle.DescriptionEN = article.DescriptionEN;
             NewArticle.Url = article.Url;
             NewArticle.IsEnabled=article.IsEnabled;
             // Save the new row
-            await WebService.PostArticle(NewArticle);
+            transactionMsg = await WebService.PostArticle(NewArticle);
         }
         else
         {
             // Update the row
-            await WebService.PutArticle(article);
+            transactionMsg = await WebService.PutArticle(article);
             languageid = "";
         }
         await Refresh();
@@ -279,7 +295,7 @@ else
     {
         ShowPopup = false;
 
-        await WebService.DeleteArticle(article);
+        transactionMsg = await WebService.DeleteArticle(article);
         await Refresh();
     }
     private async Task FirstPage()

@@ -39,7 +39,7 @@ All rights reserved
   - [ ] Authentication
   - [ ] Authentication
 - [ ] On premises layout
-  - [ ] Home page
+  - [X] Home page
   - [X] About Us
   - [X] Legal
   - [ ] Cookies
@@ -47,8 +47,8 @@ All rights reserved
   - [ ] Contact
   - [ ] Pricing
   - [X] Meta Tags
-  - [ ] Announcements
-  - [ ] Articles
+  - [X] Announcements
+  - [X] Articles
   - [ ] Calendars
 - [ ] Services
   - [ ] CommonService
@@ -57,6 +57,7 @@ All rights reserved
   - [ ] MISService
   - [ ] ProjectService
   - [ ] BankingService
+  - [ ] WebService
 - [ ] Customer Relationship Management
 - [ ] Triage - Documents Management
 - [ ] Accounting

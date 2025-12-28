@@ -19,6 +19,8 @@
             @L["Buscar"]: <input type="text" />
         </form> *@
         <div class="navbar-nav ms-auto py-0">
+            <div style="height:100%;padding-top:35px;padding-right:50px;"><CultureSelector /></div>
+            
             <div class="nav-item dropdown">
                 <a href="/" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Valkian</a>
                 @* <a href="#" class="nav-link dropdown-toggle">@L["Who we are"]</a> *@
@@ -30,7 +32,7 @@
                     <a href="/Testimonial" class="dropdown-item">@L["Testimonial"]</a>
                 </div>
             </div>
-            <div class="nav-item dropdown">
+            @* <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">@L["Portfolio"]</a>
                 <div class="dropdown-menu m-0">
                     <a href="/Dba" class="dropdown-item">@L["DBA"]</a>
@@ -38,9 +40,8 @@
                     <a href="/Pm" class="dropdown-item">@L["Project Management"]</a>
                     <a href="/Integration" class="dropdown-item">@L["Integration"]</a>
                     <a href="/Websites" class="dropdown-item">@L["Websites"]</a>
-                    @* <a href="404.html" class="dropdown-item">404 Page</a> *@
                 </div>
-            </div>
+            </div> *@
             @if (isRoleWeb || isRoleMarketing)
             {
                 <div class="nav-item dropdown">
@@ -63,7 +64,7 @@
                     <a href="/404" class="dropdown-item">404 Page</a>
                 </div>
             </div> *@
-            <a href="/Contact" class="nav-item nav-link">Contact Us</a>
+            <a href="/Contact" class="nav-item nav-link">@L["Contact"]</a>
         </div>
         
         <AuthorizeView>
